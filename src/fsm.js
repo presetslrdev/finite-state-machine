@@ -8,8 +8,8 @@ class FSM {
         this.config = config;
         this.state = config.initial;
         this.history = [];
-
-
+        this.cache = [];
+        this.triggers = 0;
     }
 
     /**
@@ -39,6 +39,7 @@ class FSM {
      */
     trigger(event) {
         this.changeState(this.config.states[this.state].transitions[event]);
+        this.triggers++;
     }
 
     /**
@@ -46,6 +47,8 @@ class FSM {
      */
     reset() {
         this.state = this.config.initial;
+        this.history.splice();
+        this.cache.splice();
     }
 
     /**
@@ -58,7 +61,7 @@ class FSM {
         let State = [];
         if (event) {
             for (let state in this.config.states) {
-                if(this.config.states[state].transitions[event])
+                if (this.config.states[state].transitions[event])
                     State.push(state);
             }
         } else {
@@ -75,7 +78,13 @@ class FSM {
      * @returns {Boolean}
      */
     undo() {
-        return this.state === this.config.initial ? false : true;
+         if(this.history.length === 0)
+             return false;
+         else{
+             this.cache.push(this.state);
+             this.state = !this.triggers ? this.config.initial : this.history.pop();
+             return true;
+         }
     }
 
     /**
@@ -84,7 +93,13 @@ class FSM {
      * @returns {Boolean}
      */
     redo() {
-        return this.state === this.config.initial ? false : true;
+        if(this.cache.length === 0)
+            return false;
+        else{
+            this.history.push(this.state);
+            this.state = this.cache.pop();
+            return false;
+        }
     }
 
     /**
@@ -92,6 +107,7 @@ class FSM {
      */
     clearHistory() {
         this.history.splice();
+        this.cache.splice();
     }
 }
 
