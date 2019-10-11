@@ -47,8 +47,8 @@ class FSM {
      */
     reset() {
         this.state = this.config.initial;
-        this.history.splice();
-        this.cache.splice();
+        this.history = [];
+        this.cache = [];
     }
 
     /**
@@ -106,8 +106,8 @@ class FSM {
      * Clears transition history
      */
     clearHistory() {
-        this.history.splice();
-        this.cache.splice();
+        this.history = [];
+        this.cache = [];
     }
 }
 
